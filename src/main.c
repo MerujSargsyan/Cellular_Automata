@@ -3,22 +3,24 @@
 #include <stdlib.h>
 #include <time.h>
 
-const int sq_width = 20;
-const int sq_height = 20;
-const int w_width = 1200;
-const int w_height = 1200;
+const int sq_width = 10;
+const int sq_height = 10;
+const int w_width = 800;
+const int w_height = 800;
+const int start_count = 500;
 const int sq_count = (w_width / sq_width) * (w_height / sq_height);
 const int rows = sq_count / (w_width / sq_width);
 const int cols = sq_count / (w_height/ sq_height);
+int active = 0;
 
-void DrawRows() {
+void draw_rows() {
     int curr = 0;
     for(int i = 0; i < w_height; i += sq_height) {
         DrawLine(0, i, w_width, i, WHITE);
     }
 }
 
-void DrawCols() {
+void draw_cols() {
     int curr = 0;
     for(int i = 0; i < w_height; i += sq_width) {
         DrawLine(i, 0, i, w_height, WHITE);
@@ -35,7 +37,7 @@ void DrawCols() {
  * 1D:
  * 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1
 */
-void DrawCells(int* cells) {
+void draw_cells(int* cells) {
     for(int r = 0; r < rows; r++) {
         for(int c = 0; c < cols; c++) {
             if(cells[r * rows + c]) {
@@ -47,15 +49,18 @@ void DrawCells(int* cells) {
     }
 }
 
-int* InitGrid(int start_count) {
-    int* cells = malloc(sizeof(int) * sq_count);
-    for(int i = 0; i < sq_count; i++) {
-        cells[i] = 0;
-    }
+void start_life(int* cells) {
     srand(time(0));
     for(int i = 0; i < start_count; i++) {
         int idx = rand() % sq_count;
         cells[idx] = 1;
+    }
+}
+
+int* init_grid(int start_count) {
+    int* cells = malloc(sizeof(int) * sq_count);
+    for(int i = 0; i < sq_count; i++) {
+        cells[i] = 0;
     }
     return cells;
 }
@@ -79,7 +84,7 @@ int neighbor_count(int* cells, int r, int c) {
     return count;
 }
 
-void ApplyRules(int* cells) {
+void apply_rules(int* cells) {
     for(int r = 0; r < rows; r++) {
         for(int c = 0; c < cols; c++) {
             int n = neighbor_count(cells, r, c);
@@ -93,19 +98,35 @@ void ApplyRules(int* cells) {
     }
 }
 
-int main(void) {
-    SetTargetFPS(15);
+void read_input(int* cells) {
+    if(IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+        active = !active;
+    }
+    if(active) {
+        start_life(cells);
+    } else {
+        for(int i = 0; i < sq_count; i++) {
+            cells[i] = 0;
+        }
+    }
+}
 
-    int* cells = InitGrid(1000);
+int main(void) {
+    SetTargetFPS(5);
+
+    int* cells = init_grid(start_count);
     InitWindow(w_width, w_height, "Cellular Automata");
     while(!WindowShouldClose()) {
         ClearBackground(BLACK);
+        read_input(cells);
         BeginDrawing();
          {
-             DrawCells((int*)cells);
-             DrawRows();
-             DrawCols();
-             ApplyRules(cells);
+             if(active) {
+                draw_cells(cells);
+             }
+             draw_rows();
+             draw_cols();
+             apply_rules(cells);
          }
         EndDrawing();
     }
