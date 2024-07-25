@@ -5,8 +5,8 @@
 
 const int sq_width = 10;
 const int sq_height = 10;
-const int w_width = 800;
-const int w_height = 800;
+const int w_width = 1000;
+const int w_height = 1000;
 const int start_count = 500;
 const int sq_count = (w_width / sq_width) * (w_height / sq_height);
 const int rows = sq_count / (w_width / sq_width);
@@ -18,7 +18,10 @@ const int button_width = 200;
 
 void draw_button() {
     // TODO: fix these variables
-    DrawRectangle((w_width / 2) - (button_width/2), w_height + button_height, button_height/2, button_width, BLUE);
+    int x = (w_width/2) - (button_width/2);
+    int y = w_height;
+    DrawRectangle(x, y, button_width, button_height, BLUE);
+    DrawText("Play", x + button_width/3, y + button_height/2, 12, WHITE);
 }
 
 void draw_rows() {
@@ -127,14 +130,14 @@ int main(void) {
     InitWindow(w_width, w_height + button_height, "Cellular Automata");
     while(!WindowShouldClose()) {
         ClearBackground(BLACK);
-        read_input(cells);
+        // read_input(cells);
         BeginDrawing();
          {
-             draw_button();
              draw_cells(cells);
              draw_rows();
              draw_cols();
              apply_rules(cells);
+             draw_button();
          }
         EndDrawing();
     }
