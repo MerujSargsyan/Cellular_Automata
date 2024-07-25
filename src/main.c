@@ -1,4 +1,4 @@
-#include <raylib.h>
+#include <raylib.h> 
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -13,16 +13,24 @@ const int rows = sq_count / (w_width / sq_width);
 const int cols = sq_count / (w_height/ sq_height);
 int active = 0;
 
+const int button_height = 50;
+const int button_width = 200;
+
+void draw_button() {
+    // TODO: fix these variables
+    DrawRectangle((w_width / 2) - (button_width/2), w_height + button_height, button_height/2, button_width, BLUE);
+}
+
 void draw_rows() {
     int curr = 0;
-    for(int i = 0; i < w_height; i += sq_height) {
+    for(int i = 0; i <= w_height; i += sq_height) {
         DrawLine(0, i, w_width, i, WHITE);
     }
 }
 
 void draw_cols() {
     int curr = 0;
-    for(int i = 0; i < w_height; i += sq_width) {
+    for(int i = 0; i <= w_height; i += sq_width) {
         DrawLine(i, 0, i, w_height, WHITE);
     }
 }
@@ -99,7 +107,7 @@ void apply_rules(int* cells) {
 }
 
 void read_input(int* cells) {
-    if(IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+    /*if(IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
         active = !active;
     }
     if(active) {
@@ -108,22 +116,22 @@ void read_input(int* cells) {
         for(int i = 0; i < sq_count; i++) {
             cells[i] = 0;
         }
-    }
+    }*/
 }
 
 int main(void) {
     SetTargetFPS(5);
 
     int* cells = init_grid(start_count);
-    InitWindow(w_width, w_height, "Cellular Automata");
+    start_life(cells);
+    InitWindow(w_width, w_height + button_height, "Cellular Automata");
     while(!WindowShouldClose()) {
         ClearBackground(BLACK);
         read_input(cells);
         BeginDrawing();
          {
-             if(active) {
-                draw_cells(cells);
-             }
+             draw_button();
+             draw_cells(cells);
              draw_rows();
              draw_cols();
              apply_rules(cells);
