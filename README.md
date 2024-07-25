@@ -5,13 +5,13 @@
 ## Usage: (CMake required)
 
 Clone repo and simply run
-'''bash
+```bash
 make
-'''
+```
 
 Then to run the project, run
-'''bash
+```bash
 make run
-'''
+```
 
 # I plan to do more with this project but it was quick and fun to make
