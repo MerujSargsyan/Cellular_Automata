@@ -3,10 +3,10 @@
 #include <stdlib.h>
 #include <time.h>
 
-const int sq_width = 10;
-const int sq_height = 10;
-const int w_width = 800;
-const int w_height = 800;
+const int sq_width = 20;
+const int sq_height = 20;
+const int w_width = 1200;
+const int w_height = 1200;
 const int sq_count = (w_width / sq_width) * (w_height / sq_height);
 const int rows = sq_count / (w_width / sq_width);
 const int cols = sq_count / (w_height/ sq_height);
@@ -39,7 +39,7 @@ void DrawCells(int* cells) {
     for(int r = 0; r < rows; r++) {
         for(int c = 0; c < cols; c++) {
             if(cells[r * rows + c]) {
-                DrawRectangle(c * sq_width, r * sq_height, sq_width, sq_height, RED);
+                DrawRectangle(c * sq_width, r * sq_height, sq_width, sq_height, WHITE);
             } else {
                 DrawRectangle(c * sq_width, r * sq_height, sq_width, sq_height, BLACK);
             }
@@ -94,9 +94,9 @@ void ApplyRules(int* cells) {
 }
 
 int main(void) {
-    SetTargetFPS(10);
+    SetTargetFPS(15);
 
-    int* cells = InitGrid(500);
+    int* cells = InitGrid(1000);
     InitWindow(w_width, w_height, "Cellular Automata");
     while(!WindowShouldClose()) {
         ClearBackground(BLACK);
