@@ -38,8 +38,10 @@ void DrawCols() {
 void DrawCells(int* cells) {
     for(int r = 0; r < rows; r++) {
         for(int c = 0; c < cols; c++) {
-            if(cells[r * cols + c]) {
-                DrawRectangle(c * sq_width, r * sq_height, sq_width, sq_height, BLUE);
+            if(cells[r * rows + c]) {
+                DrawRectangle(c * sq_width, r * sq_height, sq_width, sq_height, RED);
+            } else {
+                DrawRectangle(c * sq_width, r * sq_height, sq_width, sq_height, BLACK);
             }
         }
     }
@@ -58,19 +60,52 @@ int* InitGrid(int start_count) {
     return cells;
 }
 
+int neighbor_count(int* cells, int r, int c) {
+    int idx = r * rows + c;
+    int count = 0;
+    if(c > 0 && cells[idx-1]) count++;
+    if(c < cols-1 && cells[idx+1]) count++;
+
+    // check top row
+    if(r > 0 && cells[idx-cols]) count++;
+    if(r > 0 && c > 0 && cells[idx-cols-1]) count++;
+    if(r > 0 && c < cols-1 && cells[idx-cols+1]) count++;
+
+    // check bottom row
+    if(r < rows-1 && cells[idx+cols]) count++;
+    if(r < rows-1 && c > 0 && cells[idx+cols-1]) count++;
+    if(r < rows-1 && c < cols-1 && cells[idx+cols+1]) count++;
+
+    return count;
+}
+
+void ApplyRules(int* cells) {
+    for(int r = 0; r < rows; r++) {
+        for(int c = 0; c < cols; c++) {
+            int n = neighbor_count(cells, r, c);
+            int idx = r*rows+c;
+            if(n > 3 || n < 2) {
+                cells[idx] = 0;
+            } else if(n == 3) {
+                cells[idx] = 1;
+            }
+        }
+    }
+}
+
 int main(void) {
-    SetTargetFPS(30);
+    SetTargetFPS(10);
 
     int* cells = InitGrid(500);
-
     InitWindow(w_width, w_height, "Cellular Automata");
     while(!WindowShouldClose()) {
         ClearBackground(BLACK);
         BeginDrawing();
          {
+             DrawCells((int*)cells);
              DrawRows();
              DrawCols();
-             DrawCells((int*)cells);
+             ApplyRules(cells);
          }
         EndDrawing();
     }
