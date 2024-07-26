@@ -4,7 +4,7 @@
 #include <time.h>
 #include <string.h>
 
-#define MAX_LEN 10
+#define MAX_LEN 11
 
 const int sq_width = 10;
 const int sq_height = 10;
