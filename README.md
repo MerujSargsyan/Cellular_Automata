@@ -14,4 +14,4 @@ Then to run the project, run
 make run
 ```
 
-# I plan to do more with this project but it was quick and fun to make
+### I plan to do more with this project but it was quick and fun to make

@@ -2,26 +2,72 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <string.h>
+
+#define MAX_LEN 10
 
 const int sq_width = 10;
 const int sq_height = 10;
-const int w_width = 1000;
-const int w_height = 1000;
+const int w_width = 800;
+const int w_height = 800;
 const int start_count = 500;
 const int sq_count = (w_width / sq_width) * (w_height / sq_height);
 const int rows = sq_count / (w_width / sq_width);
 const int cols = sq_count / (w_height/ sq_height);
-int active = 0;
+int live = 0;
+int paused = 0;
 
 const int button_height = 50;
 const int button_width = 200;
 
-void draw_button() {
-    // TODO: fix these variables
-    int x = (w_width/2) - (button_width/2);
-    int y = w_height;
-    DrawRectangle(x, y, button_width, button_height, BLUE);
-    DrawText("Play", x + button_width/3, y + button_height/2, 12, WHITE);
+struct button {
+    char* text;
+    Rectangle rect;
+};
+
+struct button play_pause;
+struct button start_stop;
+
+void init_buttons() {
+    play_pause.text = malloc(MAX_LEN);
+    strncpy(play_pause.text, "Pause", strnlen("Pause", MAX_LEN));
+    play_pause.rect = (Rectangle){(w_width/4) - (button_width/2), w_height, button_width, button_height};
+    
+    start_stop.text = malloc(MAX_LEN);
+    strncpy(start_stop.text, "Start", strnlen("Start", MAX_LEN));
+    start_stop.rect = (Rectangle){(w_width - w_width/4) - (button_width/2), w_height, button_width, button_height};
+}
+
+void update_button_text() {
+    if(paused) {
+        strncpy(play_pause.text, "Play\0", strnlen("Play\0", MAX_LEN));
+    } else {
+        strncpy(play_pause.text, "Pause\0", strnlen("Pause\0", MAX_LEN));
+    }
+
+    if(live) {
+        strncpy(start_stop.text, "Stop\0", strnlen("Stop\0", MAX_LEN));
+    } else {
+        strncpy(start_stop.text, "Start\0", strnlen("Start\0", MAX_LEN));
+    }
+}
+
+void update_buttons(Vector2 point) {
+    if(CheckCollisionPointRec(point, play_pause.rect) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+        paused = !paused;
+        update_button_text();
+    }
+
+    if(CheckCollisionPointRec(point, start_stop.rect) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+        live = !live;
+        update_button_text();
+    }
+
+    DrawRectangleRec(play_pause.rect, BLUE);
+    DrawText(play_pause.text, play_pause.rect.x + button_width/2 - MeasureText(play_pause.text, 12), play_pause.rect.y + button_height/2, 12, WHITE);
+
+    DrawRectangleRec(start_stop.rect, BLUE);
+    DrawText(start_stop.text, start_stop.rect.x + button_width/2 - MeasureText(start_stop.text, 12), start_stop.rect.y + button_height/2, 12, WHITE);
 }
 
 void draw_rows() {
@@ -109,35 +155,35 @@ void apply_rules(int* cells) {
     }
 }
 
-void read_input(int* cells) {
-    /*if(IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
-        active = !active;
+void read_input() {
+    if(IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+        live = !live;
     }
-    if(active) {
-        start_life(cells);
-    } else {
-        for(int i = 0; i < sq_count; i++) {
-            cells[i] = 0;
-        }
-    }*/
+}
+
+void update(int* cells) {
+    draw_rows();
+    draw_cols();
+    update_buttons(GetMousePosition());
+    read_input();
+    if(live) {
+        apply_rules(cells);
+        draw_cells(cells);
+    }
 }
 
 int main(void) {
     SetTargetFPS(5);
 
     int* cells = init_grid(start_count);
-    start_life(cells);
     InitWindow(w_width, w_height + button_height, "Cellular Automata");
+    init_buttons();
     while(!WindowShouldClose()) {
         ClearBackground(BLACK);
         // read_input(cells);
         BeginDrawing();
          {
-             draw_cells(cells);
-             draw_rows();
-             draw_cols();
-             apply_rules(cells);
-             draw_button();
+             update(cells);
          }
         EndDrawing();
     }
