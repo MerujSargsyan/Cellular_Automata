@@ -8,12 +8,16 @@
 
 const int sq_width = 10;
 const int sq_height = 10;
+
 const int w_width = 800;
 const int w_height = 800;
+
 const int start_count = 500;
 const int sq_count = (w_width / sq_width) * (w_height / sq_height);
+
 const int rows = sq_count / (w_width / sq_width);
 const int cols = sq_count / (w_height/ sq_height);
+
 int live = 0;
 int paused = 0;
 
@@ -40,29 +44,28 @@ void init_buttons() {
 
 void update_button_text() {
     if(paused) {
-        strncpy(play_pause.text, "Play\0", strnlen("Play\0", MAX_LEN));
+        strncpy(play_pause.text, "Play", strnlen("Play", MAX_LEN));
     } else {
-        strncpy(play_pause.text, "Pause\0", strnlen("Pause\0", MAX_LEN));
+        strncpy(play_pause.text, "Pause", strnlen("Pause", MAX_LEN));
     }
 
     if(live) {
-        strncpy(start_stop.text, "Stop\0", strnlen("Stop\0", MAX_LEN));
+        strncpy(start_stop.text, "Stop", strnlen("Stop", MAX_LEN));
     } else {
-        strncpy(start_stop.text, "Start\0", strnlen("Start\0", MAX_LEN));
+        strncpy(start_stop.text, "Start", strnlen("Start", MAX_LEN));
     }
 }
 
 void update_buttons(Vector2 point) {
     if(CheckCollisionPointRec(point, play_pause.rect) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
         paused = !paused;
-        update_button_text();
     }
 
     if(CheckCollisionPointRec(point, start_stop.rect) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
         live = !live;
-        update_button_text();
     }
 
+    update_button_text();
     DrawRectangleRec(play_pause.rect, BLUE);
     DrawText(play_pause.text, play_pause.rect.x + button_width/2 - MeasureText(play_pause.text, 12), play_pause.rect.y + button_height/2, 12, WHITE);
 
@@ -155,19 +158,14 @@ void apply_rules(int* cells) {
     }
 }
 
-void read_input() {
-    if(IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
-        live = !live;
-    }
-}
-
 void update(int* cells) {
-    draw_rows();
-    draw_cols();
     update_buttons(GetMousePosition());
-    read_input();
     if(live) {
-        apply_rules(cells);
+        if(!paused) {
+            apply_rules(cells);
+        }
+        draw_rows();
+        draw_cols();
         draw_cells(cells);
     }
 }
@@ -178,12 +176,13 @@ int main(void) {
     int* cells = init_grid(start_count);
     InitWindow(w_width, w_height + button_height, "Cellular Automata");
     init_buttons();
+    start_life(cells);
     while(!WindowShouldClose()) {
         ClearBackground(BLACK);
-        // read_input(cells);
         BeginDrawing();
          {
-             update(cells);
+            printf("paused: %d, live: %d\n", paused, live);
+            update(cells);
          }
         EndDrawing();
     }
