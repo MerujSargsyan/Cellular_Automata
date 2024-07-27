@@ -24,6 +24,8 @@ int paused = 0;
 const int button_height = 50;
 const int button_width = 200;
 
+int* cells;
+
 struct button {
     char* text;
     Rectangle rect;
@@ -31,6 +33,23 @@ struct button {
 
 struct button play_pause;
 struct button start_stop;
+
+void make_grid() {
+    if(cells) free(cells); // cells is not NULL
+    cells = malloc(sizeof(int) * sq_count);
+    for(int i = 0; i < sq_count; i++) {
+        cells[i] = 0;
+    }
+}
+
+void start_life() {
+    srand(time(0));
+    for(int i = 0; i < start_count; i++) {
+        int idx = rand() % sq_count;
+        cells[idx] = 1;
+    }
+}
+
 
 void init_buttons() {
     play_pause.text = malloc(MAX_LEN);
@@ -62,6 +81,10 @@ void update_buttons(Vector2 point) {
     }
 
     if(CheckCollisionPointRec(point, start_stop.rect) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+        if(!live) {
+            make_grid();
+            start_life();
+        }
         live = !live;
     }
 
@@ -97,7 +120,7 @@ void draw_cols() {
  * 1D:
  * 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1
 */
-void draw_cells(int* cells) {
+void draw_cells() {
     for(int r = 0; r < rows; r++) {
         for(int c = 0; c < cols; c++) {
             if(cells[r * rows + c]) {
@@ -109,23 +132,8 @@ void draw_cells(int* cells) {
     }
 }
 
-void start_life(int* cells) {
-    srand(time(0));
-    for(int i = 0; i < start_count; i++) {
-        int idx = rand() % sq_count;
-        cells[idx] = 1;
-    }
-}
 
-int* init_grid(int start_count) {
-    int* cells = malloc(sizeof(int) * sq_count);
-    for(int i = 0; i < sq_count; i++) {
-        cells[i] = 0;
-    }
-    return cells;
-}
-
-int neighbor_count(int* cells, int r, int c) {
+int neighbor_count(int r, int c) {
     int idx = r * rows + c;
     int count = 0;
     if(c > 0 && cells[idx-1]) count++;
@@ -144,10 +152,10 @@ int neighbor_count(int* cells, int r, int c) {
     return count;
 }
 
-void apply_rules(int* cells) {
+void apply_rules() {
     for(int r = 0; r < rows; r++) {
         for(int c = 0; c < cols; c++) {
-            int n = neighbor_count(cells, r, c);
+            int n = neighbor_count(r, c);
             int idx = r*rows+c;
             if(n > 3 || n < 2) {
                 cells[idx] = 0;
@@ -158,31 +166,28 @@ void apply_rules(int* cells) {
     }
 }
 
-void update(int* cells) {
+void update() {
     update_buttons(GetMousePosition());
     if(live) {
         if(!paused) {
-            apply_rules(cells);
+            apply_rules();
         }
-        draw_rows();
-        draw_cols();
-        draw_cells(cells);
+        draw_cells();
     }
 }
 
 int main(void) {
     SetTargetFPS(5);
 
-    int* cells = init_grid(start_count);
+    make_grid();
     InitWindow(w_width, w_height + button_height, "Cellular Automata");
     init_buttons();
-    start_life(cells);
+
     while(!WindowShouldClose()) {
         ClearBackground(BLACK);
         BeginDrawing();
          {
-            printf("paused: %d, live: %d\n", paused, live);
-            update(cells);
+            update();
          }
         EndDrawing();
     }
