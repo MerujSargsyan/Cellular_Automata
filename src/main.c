@@ -1,4 +1,4 @@
-#include <raylib.h> 
+#include <raylib.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -98,14 +98,14 @@ void update_buttons(Vector2 point) {
 
 void draw_rows() {
     int curr = 0;
-    for(int i = 0; i <= w_height; i += sq_height) {
+    for(int i = 0; i <=w_height; i += sq_height) {
         DrawLine(0, i, w_width, i, WHITE);
     }
 }
 
 void draw_cols() {
     int curr = 0;
-    for(int i = 0; i <= w_height; i += sq_width) {
+    for(int i = 0; i < w_height; i += sq_width) {
         DrawLine(i, 0, i, w_height, WHITE);
     }
 }
@@ -131,7 +131,6 @@ void draw_cells() {
         }
     }
 }
-
 
 int neighbor_count(int r, int c) {
     int idx = r * rows + c;
@@ -177,7 +176,7 @@ void update() {
 }
 
 int main(void) {
-    SetTargetFPS(5);
+    SetTargetFPS(10);
 
     make_grid();
     InitWindow(w_width, w_height + button_height, "Cellular Automata");
