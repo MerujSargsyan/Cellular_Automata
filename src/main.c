@@ -62,12 +62,17 @@ void init_buttons() {
 }
 
 void update_button_text() {
+    free(play_pause.text);
+    play_pause.text = malloc(MAX_LEN);
+
     if(paused) {
         strncpy(play_pause.text, "Play", strnlen("Play", MAX_LEN));
     } else {
         strncpy(play_pause.text, "Pause", strnlen("Pause", MAX_LEN));
     }
 
+    free(start_stop.text);
+    start_stop.text = malloc(MAX_LEN);
     if(live) {
         strncpy(start_stop.text, "Stop", strnlen("Stop", MAX_LEN));
     } else {
@@ -186,9 +191,7 @@ int main(void) {
     while(!WindowShouldClose()) {
         ClearBackground(BLACK);
         BeginDrawing();
-         {
-            update();
-         }
+        update();
         EndDrawing();
     }
     CloseWindow();

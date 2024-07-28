@@ -1,0 +1,14 @@
+# Target labels
+ raylib-populate
+# Source files and their labels
+/Users/meruzhansargsyan/Desktop/temp/Coding/Projects/CellularAutomata/build/_deps/raylib-subbuild/CMakeFiles/raylib-populate
+/Users/meruzhansargsyan/Desktop/temp/Coding/Projects/CellularAutomata/build/_deps/raylib-subbuild/CMakeFiles/raylib-populate.rule
+/Users/meruzhansargsyan/Desktop/temp/Coding/Projects/CellularAutomata/build/_deps/raylib-subbuild/CMakeFiles/raylib-populate-complete.rule
+/Users/meruzhansargsyan/Desktop/temp/Coding/Projects/CellularAutomata/build/_deps/raylib-subbuild/raylib-populate-prefix/src/raylib-populate-stamp/raylib-populate-build.rule
+/Users/meruzhansargsyan/Desktop/temp/Coding/Projects/CellularAutomata/build/_deps/raylib-subbuild/raylib-populate-prefix/src/raylib-populate-stamp/raylib-populate-configure.rule
+/Users/meruzhansargsyan/Desktop/temp/Coding/Projects/CellularAutomata/build/_deps/raylib-subbuild/raylib-populate-prefix/src/raylib-populate-stamp/raylib-populate-download.rule
+/Users/meruzhansargsyan/Desktop/temp/Coding/Projects/CellularAutomata/build/_deps/raylib-subbuild/raylib-populate-prefix/src/raylib-populate-stamp/raylib-populate-install.rule
+/Users/meruzhansargsyan/Desktop/temp/Coding/Projects/CellularAutomata/build/_deps/raylib-subbuild/raylib-populate-prefix/src/raylib-populate-stamp/raylib-populate-mkdir.rule
+/Users/meruzhansargsyan/Desktop/temp/Coding/Projects/CellularAutomata/build/_deps/raylib-subbuild/raylib-populate-prefix/src/raylib-populate-stamp/raylib-populate-patch.rule
+/Users/meruzhansargsyan/Desktop/temp/Coding/Projects/CellularAutomata/build/_deps/raylib-subbuild/raylib-populate-prefix/src/raylib-populate-stamp/raylib-populate-test.rule
+/Users/meruzhansargsyan/Desktop/temp/Coding/Projects/CellularAutomata/build/_deps/raylib-subbuild/raylib-populate-prefix/src/raylib-populate-stamp/raylib-populate-update.rule
