@@ -62,12 +62,16 @@ void init_buttons() {
 }
 
 void update_button_text() {
+    free(play_pause.text);
+    play_pause.text = malloc(MAX_LEN);
     if(paused) {
         strncpy(play_pause.text, "Play", strnlen("Play", MAX_LEN));
     } else {
         strncpy(play_pause.text, "Pause", strnlen("Pause", MAX_LEN));
     }
 
+    free(start_stop.text);
+    start_stop.text = malloc(MAX_LEN);
     if(live) {
         strncpy(start_stop.text, "Stop", strnlen("Stop", MAX_LEN));
     } else {
@@ -123,13 +127,15 @@ void draw_cols() {
 void draw_cells() {
     for(int r = 0; r < rows; r++) {
         for(int c = 0; c < cols; c++) {
-            if(cells[r * rows + c]) {
+            if(cells[r * cols + c]) {
                 DrawRectangle(c * sq_width, r * sq_height, sq_width, sq_height, WHITE);
             } else {
                 DrawRectangle(c * sq_width, r * sq_height, sq_width, sq_height, BLACK);
             }
         }
     }
+    draw_rows();
+    draw_cols();
 }
 
 int neighbor_count(int r, int c) {
@@ -165,12 +171,23 @@ void apply_rules() {
     }
 }
 
+void brush(Vector2 m_pos) {
+    int x = m_pos.x / sq_width;
+    int y = m_pos.y / sq_height;
+    printf("x: %d, y: %d\n", x, y);
+    cells[y * rows + x] = 1;
+}
+
 void update() {
-    update_buttons(GetMousePosition());
+    Vector2 m_pos = GetMousePosition();
+    update_buttons(m_pos);
     if(live) {
         if(!paused) {
             apply_rules();
         }
+        draw_cells();
+    } else {
+        brush(m_pos);
         draw_cells();
     }
 }
@@ -185,9 +202,7 @@ int main(void) {
     while(!WindowShouldClose()) {
         ClearBackground(BLACK);
         BeginDrawing();
-         {
-            update();
-         }
+        update();
         EndDrawing();
     }
     CloseWindow();
