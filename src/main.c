@@ -64,7 +64,6 @@ void init_buttons() {
 void update_button_text() {
     free(play_pause.text);
     play_pause.text = malloc(MAX_LEN);
-
     if(paused) {
         strncpy(play_pause.text, "Play", strnlen("Play", MAX_LEN));
     } else {
