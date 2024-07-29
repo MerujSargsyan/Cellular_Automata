@@ -39,6 +39,15 @@ struct button play_pause;
 struct button start_stop;
 struct button brush;
 
+bool is_board_empty() {
+    for(int i = 0; i < sq_count; i++) {
+        if(cells[i]) {
+            return false;
+        }
+    }
+    return true;
+}
+
 void make_grid() {
     if(cells) free(cells); // cells is not NULL
     cells = malloc(sizeof(int) * sq_count);
@@ -93,9 +102,9 @@ void update_buttons(Vector2 point) {
     }
 
     if(CheckCollisionPointRec(point, start_stop.rect) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
-        make_grid();
+        if(is_board_empty()) make_grid();
         if(!live) {
-            start_life();
+            (!brushing) start_life();
             brushing = false;
         }
         live = !live;
@@ -195,7 +204,6 @@ void use_brush(Vector2 m_pos) {
     if(!brushing) return;
     int x = m_pos.x / sq_width;
     int y = m_pos.y / sq_height;
-    printf("x: %d, y: %d\n", x, y);
     cells[y * rows + x] = 1;
 }
 
