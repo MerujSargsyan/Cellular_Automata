@@ -18,11 +18,15 @@ const int sq_count = (w_width / sq_width) * (w_height / sq_height);
 const int rows = sq_count / (w_width / sq_width);
 const int cols = sq_count / (w_height/ sq_height);
 
-int live = 0;
-int paused = 0;
+bool live = false;
+bool paused = false;
+bool brushing = false;
 
-const int button_height = 50;
-const int button_width = 200;
+const int h_button = 50;
+const int w_button = 200;
+
+const int h_brush = 50;
+const int w_brush = 50;
 
 int* cells;
 
@@ -33,6 +37,7 @@ struct button {
 
 struct button play_pause;
 struct button start_stop;
+struct button brush;
 
 void make_grid() {
     if(cells) free(cells); // cells is not NULL
@@ -50,15 +55,18 @@ void start_life() {
     }
 }
 
-
 void init_buttons() {
     play_pause.text = malloc(MAX_LEN);
     strncpy(play_pause.text, "Pause", strnlen("Pause", MAX_LEN));
-    play_pause.rect = (Rectangle){(w_width/4) - (button_width/2), w_height, button_width, button_height};
+    play_pause.rect = (Rectangle){(w_width/4) - (w_button/2), w_height, w_button, h_button};
     
     start_stop.text = malloc(MAX_LEN);
     strncpy(start_stop.text, "Start", strnlen("Start", MAX_LEN));
-    start_stop.rect = (Rectangle){(w_width - w_width/4) - (button_width/2), w_height, button_width, button_height};
+    start_stop.rect = (Rectangle){(w_width - w_width/4) - (w_button/2), w_height, w_button, h_button};
+
+    brush.text = malloc(2); // just B\0
+    strncpy(brush.text, "B", strnlen("B", MAX_LEN));
+    brush.rect = (Rectangle){(w_width - w_brush)/2, w_height, w_brush, h_brush};
 }
 
 void update_button_text() {
@@ -85,19 +93,30 @@ void update_buttons(Vector2 point) {
     }
 
     if(CheckCollisionPointRec(point, start_stop.rect) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+        make_grid();
         if(!live) {
-            make_grid();
             start_life();
+            brushing = false;
         }
         live = !live;
     }
 
+    if(CheckCollisionPointRec(point, brush.rect) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+        if(!live) {
+            brushing = !brushing;
+        }
+    }
+
     update_button_text();
+
     DrawRectangleRec(play_pause.rect, BLUE);
-    DrawText(play_pause.text, play_pause.rect.x + button_width/2 - MeasureText(play_pause.text, 12), play_pause.rect.y + button_height/2, 12, WHITE);
+    DrawText(play_pause.text, play_pause.rect.x + w_button/2 - MeasureText(play_pause.text, 12), play_pause.rect.y + h_button/2, 12, WHITE);
 
     DrawRectangleRec(start_stop.rect, BLUE);
-    DrawText(start_stop.text, start_stop.rect.x + button_width/2 - MeasureText(start_stop.text, 12), start_stop.rect.y + button_height/2, 12, WHITE);
+    DrawText(start_stop.text, start_stop.rect.x + w_button/2 - MeasureText(start_stop.text, 12), start_stop.rect.y + h_button/2, 12, WHITE);
+
+    DrawRectangleRec(brush.rect, BLUE);
+    DrawText(brush.text, brush.rect.x + w_brush/2 - MeasureText(brush.text, 12), brush.rect.y + h_brush/2, 12, WHITE);
 }
 
 void draw_rows() {
@@ -171,7 +190,8 @@ void apply_rules() {
     }
 }
 
-void brush(Vector2 m_pos) {
+void use_brush(Vector2 m_pos) {
+    if(!brushing) return;
     int x = m_pos.x / sq_width;
     int y = m_pos.y / sq_height;
     printf("x: %d, y: %d\n", x, y);
@@ -187,7 +207,7 @@ void update() {
         }
         draw_cells();
     } else {
-        brush(m_pos);
+        use_brush(m_pos);
         draw_cells();
     }
 }
@@ -196,7 +216,7 @@ int main(void) {
     SetTargetFPS(10);
 
     make_grid();
-    InitWindow(w_width, w_height + button_height, "Cellular Automata");
+    InitWindow(w_width, w_height + h_button, "Cellular Automata");
     init_buttons();
 
     while(!WindowShouldClose()) {
