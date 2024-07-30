@@ -28,20 +28,28 @@ const int w_button = 200;
 const int h_brush = 50;
 const int w_brush = 50;
 
-int* cells;
+int cells[sq_count];
 
 struct button {
     char* text;
     Rectangle rect;
+    Color col;
 };
 
 struct button play_pause;
 struct button start_stop;
 struct button brush;
 
+bool is_board_empty() {
+    for(int i = 0; i < sq_count; i++) {
+        if(cells[i]) {
+            return false;
+        }
+    }
+    return true;
+}
+
 void make_grid() {
-    if(cells) free(cells); // cells is not NULL
-    cells = malloc(sizeof(int) * sq_count);
     for(int i = 0; i < sq_count; i++) {
         cells[i] = 0;
     }
@@ -59,14 +67,17 @@ void init_buttons() {
     play_pause.text = malloc(MAX_LEN);
     strncpy(play_pause.text, "Pause", strnlen("Pause", MAX_LEN));
     play_pause.rect = (Rectangle){(w_width/4) - (w_button/2), w_height, w_button, h_button};
+    play_pause.col = BLUE;
     
     start_stop.text = malloc(MAX_LEN);
     strncpy(start_stop.text, "Start", strnlen("Start", MAX_LEN));
     start_stop.rect = (Rectangle){(w_width - w_width/4) - (w_button/2), w_height, w_button, h_button};
+    start_stop.col = BLUE;
 
-    brush.text = malloc(2); // just B\0
+    brush.text = malloc(MAX_LEN); 
     strncpy(brush.text, "B", strnlen("B", MAX_LEN));
     brush.rect = (Rectangle){(w_width - w_brush)/2, w_height, w_brush, h_brush};
+    brush.col = BLUE;
 }
 
 void update_button_text() {
@@ -74,8 +85,10 @@ void update_button_text() {
     play_pause.text = malloc(MAX_LEN);
     if(paused) {
         strncpy(play_pause.text, "Play", strnlen("Play", MAX_LEN));
+        play_pause.col = RED;
     } else {
         strncpy(play_pause.text, "Pause", strnlen("Pause", MAX_LEN));
+        play_pause.col = BLUE;
     }
 
     free(start_stop.text);
@@ -85,6 +98,12 @@ void update_button_text() {
     } else {
         strncpy(start_stop.text, "Start", strnlen("Start", MAX_LEN));
     }
+
+    if(brushing) {
+        brush.col = RED;
+    } else {
+        brush.col = BLUE;
+    }
 }
 
 void update_buttons(Vector2 point) {
@@ -93,10 +112,12 @@ void update_buttons(Vector2 point) {
     }
 
     if(CheckCollisionPointRec(point, start_stop.rect) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
-        make_grid();
+        if(is_board_empty()) make_grid();
         if(!live) {
-            start_life();
+            if (!brushing) start_life();
             brushing = false;
+        } else {
+            make_grid();
         }
         live = !live;
     }
@@ -109,14 +130,20 @@ void update_buttons(Vector2 point) {
 
     update_button_text();
 
-    DrawRectangleRec(play_pause.rect, BLUE);
+    DrawRectangleRec(play_pause.rect, play_pause.col);
     DrawText(play_pause.text, play_pause.rect.x + w_button/2 - MeasureText(play_pause.text, 12), play_pause.rect.y + h_button/2, 12, WHITE);
 
-    DrawRectangleRec(start_stop.rect, BLUE);
+    DrawRectangleRec(start_stop.rect, start_stop.col);
     DrawText(start_stop.text, start_stop.rect.x + w_button/2 - MeasureText(start_stop.text, 12), start_stop.rect.y + h_button/2, 12, WHITE);
 
-    DrawRectangleRec(brush.rect, BLUE);
+    DrawRectangleRec(brush.rect, brush.col);
     DrawText(brush.text, brush.rect.x + w_brush/2 - MeasureText(brush.text, 12), brush.rect.y + h_brush/2, 12, WHITE);
+}
+
+void free_buttons() {
+    free(play_pause.text);
+    free(start_stop.text);
+    free(brush.text);
 }
 
 void draw_rows() {
@@ -194,7 +221,6 @@ void use_brush(Vector2 m_pos) {
     if(!brushing) return;
     int x = m_pos.x / sq_width;
     int y = m_pos.y / sq_height;
-    printf("x: %d, y: %d\n", x, y);
     cells[y * rows + x] = 1;
 }
 
@@ -226,6 +252,6 @@ int main(void) {
         EndDrawing();
     }
     CloseWindow();
-    free(cells);
+    free_buttons();
     return 0;
 }
