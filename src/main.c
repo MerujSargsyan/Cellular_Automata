@@ -170,12 +170,17 @@ void draw_cols() {
  * 1D:
  * 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1
 */
-void draw_cells() {
+void draw_cells(Vector2 m_pos) {
+    int x = m_pos.x / sq_width;
+    int y = m_pos.y / sq_height;
     for(int r = 0; r < rows; r++) {
         for(int c = 0; c < cols; c++) {
             if(cells[r * cols + c]) {
                 DrawRectangle(c * sq_width, r * sq_height, sq_width, sq_height, WHITE);
-            } else {
+            } else if(y == r && x == c) {
+                DrawRectangle(c * sq_width, r * sq_height, sq_width, sq_height, GRAY);
+            }
+            else {
                 DrawRectangle(c * sq_width, r * sq_height, sq_width, sq_height, BLACK);
             }
         }
@@ -222,7 +227,9 @@ void use_brush(Vector2 m_pos) {
     if(!brushing) return;
     int x = m_pos.x / sq_width;
     int y = m_pos.y / sq_height;
-    cells[y * rows + x] = 1;
+    if(IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
+        cells[y * rows + x] = 1;
+    }
 }
 
 void update() {
@@ -232,11 +239,10 @@ void update() {
         if(!paused) {
             apply_rules();
         }
-        draw_cells();
     } else {
         use_brush(m_pos);
-        draw_cells();
     }
+    draw_cells(m_pos);
 }
 
 int main(void) {
