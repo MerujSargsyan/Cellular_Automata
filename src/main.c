@@ -107,11 +107,11 @@ void update_button_text() {
 }
 
 void update_buttons(Vector2 point) {
-    if(CheckCollisionPointRec(point, play_pause.rect) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+    if(CheckCollisionPointRec(point, play_pause.rect) && IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
         paused = !paused;
     }
 
-    if(CheckCollisionPointRec(point, start_stop.rect) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+    if(CheckCollisionPointRec(point, start_stop.rect) && IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
         if(is_board_empty()) make_grid();
         if(!live) {
             if (!brushing) start_life();
@@ -122,7 +122,7 @@ void update_buttons(Vector2 point) {
         live = !live;
     }
 
-    if(CheckCollisionPointRec(point, brush.rect) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+    if(CheckCollisionPointRec(point, brush.rect) && IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
         if(!live) {
             brushing = !brushing;
         }
@@ -170,12 +170,17 @@ void draw_cols() {
  * 1D:
  * 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1
 */
-void draw_cells() {
+void draw_cells(Vector2 m_pos) {
+    int x = m_pos.x / sq_width;
+    int y = m_pos.y / sq_height;
     for(int r = 0; r < rows; r++) {
         for(int c = 0; c < cols; c++) {
             if(cells[r * cols + c]) {
                 DrawRectangle(c * sq_width, r * sq_height, sq_width, sq_height, WHITE);
-            } else {
+            } else if(y == r && x == c) {
+                DrawRectangle(c * sq_width, r * sq_height, sq_width, sq_height, GRAY);
+            }
+            else {
                 DrawRectangle(c * sq_width, r * sq_height, sq_width, sq_height, BLACK);
             }
         }
@@ -221,7 +226,9 @@ void use_brush(Vector2 m_pos) {
     if(!brushing) return;
     int x = m_pos.x / sq_width;
     int y = m_pos.y / sq_height;
-    cells[y * rows + x] = 1;
+    if(IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
+        cells[y * rows + x] = 1;
+    }
 }
 
 void update() {
@@ -231,11 +238,10 @@ void update() {
         if(!paused) {
             apply_rules();
         }
-        draw_cells();
     } else {
         use_brush(m_pos);
-        draw_cells();
     }
+    draw_cells(m_pos);
 }
 
 int main(void) {
