@@ -107,11 +107,11 @@ void update_button_text() {
 }
 
 void update_buttons(Vector2 point) {
-    if(CheckCollisionPointRec(point, play_pause.rect) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+    if(CheckCollisionPointRec(point, play_pause.rect) && IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
         paused = !paused;
     }
 
-    if(CheckCollisionPointRec(point, start_stop.rect) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+    if(CheckCollisionPointRec(point, start_stop.rect) && IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
         if(is_board_empty()) make_grid();
         if(!live) {
             if (!brushing) start_life();
@@ -122,7 +122,7 @@ void update_buttons(Vector2 point) {
         live = !live;
     }
 
-    if(CheckCollisionPointRec(point, brush.rect) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+    if(CheckCollisionPointRec(point, brush.rect) && IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
         if(!live) {
             brushing = !brushing;
         }
