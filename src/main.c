@@ -9,8 +9,9 @@
 const int sq_width = 10;
 const int sq_height = 10;
 
-const int w_width = 800;
-const int w_height = 800;
+const int w_width = 700;
+const int w_height = 700;
+const int padding = 50;
 
 const int start_count = 500;
 const int sq_count = (w_width / sq_width) * (w_height / sq_height);
@@ -148,15 +149,15 @@ void free_buttons() {
 
 void draw_rows() {
     int curr = 0;
-    for(int i = 0; i <= w_height; i += sq_height) {
-        DrawLine(0, i, w_width, i, WHITE);
+    for(int i = padding; i <= w_height; i += sq_height) {
+        DrawLine(padding, i, w_width, i, WHITE);
     }
 }
 
 void draw_cols() {
     int curr = 0;
-    for(int i = 0; i <= w_height; i += sq_width) {
-        DrawLine(i, 0, i, w_height, WHITE);
+    for(int i = padding; i <= w_height; i += sq_width) {
+        DrawLine(i, padding, i, w_height, WHITE);
     }
 }
 
@@ -249,7 +250,7 @@ int main(void) {
     SetTargetFPS(5);
 
     make_grid();
-    InitWindow(w_width, w_height + h_button, "Cellular Automata");
+    InitWindow(w_width + padding, w_height + padding, "Cellular Automata");
     init_buttons();
 
     while(!WindowShouldClose()) {
