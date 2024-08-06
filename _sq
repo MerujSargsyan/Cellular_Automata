@@ -229,8 +229,8 @@ void apply_rules() {
 void use_brush(Vector2 m_pos) {
     if(!brushing) return;
     if(m_pos.x <= padding || m_pos.y <= padding
-        || m_pos.x >= padding + sq_count*sq_width
-        || m_pos.y >= padding + sq_count*sq_height) return;
+        || m_pos.x >= padding + sq_count*w_square
+        || m_pos.y >= padding + sq_count*h_square) return;
     int x = (m_pos.x / sq_width);
     int y = (m_pos.y / sq_height);
     if(IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
