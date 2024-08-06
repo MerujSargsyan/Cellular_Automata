@@ -29,6 +29,8 @@ const int w_button = 200;
 const int h_brush = 50;
 const int w_brush = 50;
 
+struct Camera2D camera;
+
 int cells[sq_count];
 
 struct button {
@@ -233,6 +235,18 @@ void use_brush(Vector2 m_pos) {
     }
 }
 
+void init_project() {
+    InitWindow(w_width + padding, w_height + padding, "Cellular Automata");
+    make_grid();
+    init_buttons();
+
+    camera = (Camera2D){0};
+    camera.offset = (Vector2){0, 0};
+    camera.target = (Vector2){w_width/2, w_height/2};
+    camera.rotation = 0.0f;
+    camera.zoom = 1.0f;
+}
+
 void update() {
     Vector2 m_pos = GetMousePosition();
     update_buttons(m_pos);
@@ -243,22 +257,29 @@ void update() {
     } else {
         use_brush(m_pos);
     }
+
+    if(IsKeyPressed(KEY_NINE)) {
+        camera.zoom += 0.5f;
+    } else if(IsKeyPressed(KEY_ZERO)) {
+        camera.zoom -= 0.5f;
+    }
+
     draw_cells(m_pos);
 }
 
 int main(void) {
     SetTargetFPS(5);
-
-    make_grid();
-    InitWindow(w_width + padding, w_height + padding, "Cellular Automata");
-    init_buttons();
+    init_project();
 
     while(!WindowShouldClose()) {
         ClearBackground(BLACK);
+        BeginMode2D(camera);
         BeginDrawing();
         update();
         EndDrawing();
+        EndMode2D();
     }
+
     CloseWindow();
     free_buttons();
     return 0;
