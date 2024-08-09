@@ -245,7 +245,7 @@ void update() {
 }
 
 int main(void) {
-    SetTargetFPS(10);
+    SetTargetFPS(5);
 
     make_grid();
     InitWindow(w_width, w_height + h_button, "Cellular Automata");
