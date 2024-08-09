@@ -14,8 +14,8 @@ Then to run the project, run
 make run
 ```
 ### Click the B button to brush your custom cells (or leave empty for random generation)
-### Click Start to start the simluation
-### Pause button pauses the current simulation and Stop button resets it to start a new one
+#### Click "Start" to start the simulation
+#### "Pause" button pauses the current simulation and "Stop" button resets it to start a new one
 
 ## What I learned:
 <ul>
